@@ -78,7 +78,7 @@ public class Order implements Serializable {
     private Decimal price = Decimal.NaN;
     
     /** The amount to be (or that was) ordered */
-    private Decimal amount = Decimal.NaN;
+    private Decimal amount = Decimal.ONE;
     
     /**
      * Constructor.

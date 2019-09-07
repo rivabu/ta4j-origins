@@ -41,7 +41,7 @@ public final class Decimal implements Comparable<Decimal>, Serializable {
 
 	private static final long serialVersionUID = 2225130444465033658L;
 
-	public static final MathContext MATH_CONTEXT = new MathContext(32, RoundingMode.HALF_UP);
+	public static final MathContext MATH_CONTEXT = new MathContext(6, RoundingMode.HALF_UP);
 
     /** Not-a-Number instance (infinite error) */
     public static final Decimal NaN = new Decimal();

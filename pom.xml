@@ -55,6 +55,7 @@
     <modules>
         <module>ta4j</module>
         <module>ta4j-examples</module>
+        <module>ta4j-rients</module>
     </modules>
 
     <properties>

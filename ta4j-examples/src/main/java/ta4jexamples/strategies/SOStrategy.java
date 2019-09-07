@@ -23,61 +23,49 @@
 package ta4jexamples.strategies;
 
 import eu.verdelhan.ta4j.BaseStrategy;
-import eu.verdelhan.ta4j.Decimal;
 import eu.verdelhan.ta4j.Rule;
 import eu.verdelhan.ta4j.Strategy;
 import eu.verdelhan.ta4j.TimeSeries;
 import eu.verdelhan.ta4j.TimeSeriesManager;
 import eu.verdelhan.ta4j.TradingRecord;
 import eu.verdelhan.ta4j.analysis.criteria.TotalProfitCriterion;
-import eu.verdelhan.ta4j.indicators.RSIIndicator;
-import eu.verdelhan.ta4j.indicators.SMAIndicator;
-import eu.verdelhan.ta4j.indicators.helpers.ClosePriceIndicator;
-import eu.verdelhan.ta4j.trading.rules.CrossedDownIndicatorRule;
-import eu.verdelhan.ta4j.trading.rules.CrossedUpIndicatorRule;
+import eu.verdelhan.ta4j.indicators.StochasticOscillatorD2Indicator;
+import eu.verdelhan.ta4j.indicators.StochasticOscillatorDIndicator;
+import eu.verdelhan.ta4j.indicators.StochasticOscillatorKIndicator;
 import eu.verdelhan.ta4j.trading.rules.OverIndicatorRule;
 import eu.verdelhan.ta4j.trading.rules.UnderIndicatorRule;
 import ta4jexamples.loaders.CsvTicksLoaderASML;
 
 /**
- * 2-Period RSI Strategy
+ * CCI Correction Strategy
  * <p>
- * @see http://stockcharts.com/school/doku.php?id=chart_school:trading_strategies:rsi2
+ * @see http://stockcharts.com/school/doku.php?id=chart_school:trading_strategies:cci_correction
  */
-public class RSI2Strategy {
+public class SOStrategy {
 
     /**
      * @param series a time series
-     * @return a 2-period RSI strategy
+     * @return a CCI correction strategy
      */
     public static Strategy buildStrategy(TimeSeries series) {
         if (series == null) {
             throw new IllegalArgumentException("Series cannot be null");
         }
 
-        ClosePriceIndicator closePrice = new ClosePriceIndicator(series);
-        SMAIndicator shortSma = new SMAIndicator(closePrice, 5);
-        SMAIndicator longSma = new SMAIndicator(closePrice, 200);
+        StochasticOscillatorKIndicator stochasticOscillatorKIndicator =
+                new StochasticOscillatorKIndicator(series, 28);
+        StochasticOscillatorDIndicator stochasticOscillatorDIndicator_1 =
+                new StochasticOscillatorDIndicator(stochasticOscillatorKIndicator, 3);
+        StochasticOscillatorD2Indicator stochasticOscillatorDIndicator_2 =
+                new StochasticOscillatorD2Indicator(stochasticOscillatorDIndicator_1, 2);
 
-        // We use a 2-period RSI indicator to identify buying
-        // or selling opportunities within the bigger trend.
-        RSIIndicator rsi = new RSIIndicator(closePrice, 2);
-        
-        // Entry rule
-        // The long-term trend is up when a security is above its 200-period SMA.
-        Rule entryRule = new OverIndicatorRule(shortSma, longSma) // Trend
-                .and(new CrossedDownIndicatorRule(rsi, Decimal.valueOf(5))) // Signal 1
-                .and(new OverIndicatorRule(shortSma, closePrice)); // Signal 2
-        
-        // Exit rule
-        // The long-term trend is down when a security is below its 200-period SMA.
-        Rule exitRule = new UnderIndicatorRule(shortSma, longSma) // Trend
-                .and(new CrossedUpIndicatorRule(rsi, Decimal.valueOf(95))) // Signal 1
-                .and(new UnderIndicatorRule(shortSma, closePrice)); // Signal 2
-        
-        // TODO: Finalize the strategy
-        
-        return new BaseStrategy(entryRule, exitRule);
+        Rule entryRule = new OverIndicatorRule(stochasticOscillatorDIndicator_1, stochasticOscillatorDIndicator_2);
+
+        Rule exitRule = new UnderIndicatorRule(stochasticOscillatorDIndicator_1, stochasticOscillatorDIndicator_2);
+
+        Strategy strategy = new BaseStrategy(entryRule, exitRule);
+        strategy.setUnstablePeriod(50);
+        return strategy;
     }
 
     public static void main(String[] args) {
@@ -95,6 +83,10 @@ public class RSI2Strategy {
 
         // Analysis
         System.out.println("Total profit for the strategy: " + new TotalProfitCriterion().calculate(series, tradingRecord));
-    }
 
+//        tradingRecord.getTrades().forEach(trade -> {
+//            System.out.println(((trade.getExit().getPrice().dividedBy(trade.getEntry().getPrice()).minus(Decimal.ONE))).multipliedBy(Decimal.HUNDRED));
+//        });
+
+    }
 }

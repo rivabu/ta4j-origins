@@ -44,12 +44,12 @@ import org.jfree.data.time.Day;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.ui.ApplicationFrame;
 import org.jfree.ui.RefineryUtilities;
-import ta4jexamples.loaders.CsvTicksLoaderASML;
+import ta4jexamples.loaders.CsvTicksLoader;
 
 /**
  * This class builds a graphical chart showing values from indicators.
  */
-public class IndicatorsToChart {
+public class IndicatorsToChartApple {
 
     /**
      * Builds a JFreeChart time series from a Ta4j time series and an indicator.
@@ -91,8 +91,8 @@ public class IndicatorsToChart {
         /*
           Getting time series
          */
-        TimeSeries series = CsvTicksLoaderASML.loadASMLIncSeries();
-
+        TimeSeries series = CsvTicksLoader.loadAppleIncSeries();
+        //TimeSeries series = CsvTradesLoader.loadBitstampSeries();
         /**
          * Creating indicators
          */

@@ -30,15 +30,15 @@ import eu.verdelhan.ta4j.Indicator;
  * <p>
  * Receive {@link StochasticOscillatorKIndicator} and returns its {@link SMAIndicator SMAIndicator(3)}.
  */
-public class StochasticOscillatorDIndicator extends CachedIndicator<Decimal> {
+public class StochasticOscillatorD2Indicator extends CachedIndicator<Decimal> {
 
     private Indicator<Decimal> indicator;
 
-    public StochasticOscillatorDIndicator(StochasticOscillatorKIndicator k, int timeFrame) {
+    public StochasticOscillatorD2Indicator(StochasticOscillatorDIndicator k, int timeFrame) {
         this(new SMAIndicator(k, timeFrame));
     }
 
-    public StochasticOscillatorDIndicator(Indicator<Decimal> indicator) {
+    public StochasticOscillatorD2Indicator(Indicator<Decimal> indicator) {
         super(indicator);
         this.indicator = indicator;
     }

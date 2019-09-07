@@ -22,13 +22,12 @@
  */
 package eu.verdelhan.ta4j.indicators;
 
-import eu.verdelhan.ta4j.Indicator;
 import eu.verdelhan.ta4j.Decimal;
+import eu.verdelhan.ta4j.Indicator;
 import eu.verdelhan.ta4j.TimeSeries;
-import eu.verdelhan.ta4j.indicators.CachedIndicator;
+import eu.verdelhan.ta4j.indicators.helpers.ClosePriceIndicator;
 import eu.verdelhan.ta4j.indicators.helpers.HighestValueIndicator;
 import eu.verdelhan.ta4j.indicators.helpers.LowestValueIndicator;
-import eu.verdelhan.ta4j.indicators.helpers.ClosePriceIndicator;
 import eu.verdelhan.ta4j.indicators.helpers.MaxPriceIndicator;
 import eu.verdelhan.ta4j.indicators.helpers.MinPriceIndicator;
 
@@ -74,7 +73,7 @@ public class StochasticOscillatorKIndicator extends CachedIndicator<Decimal> {
 
         return indicator.getValue(index).minus(lowestLowPrice)
                 .dividedBy(highestHighPrice.minus(lowestLowPrice))
-                .multipliedBy(Decimal.HUNDRED);
+                .multipliedBy(Decimal.HUNDRED).plus(Decimal.HUNDRED).dividedBy(Decimal.TWO);
     }
 
     @Override
