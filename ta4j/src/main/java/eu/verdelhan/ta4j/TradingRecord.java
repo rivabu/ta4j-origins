@@ -22,10 +22,11 @@
  */
 package eu.verdelhan.ta4j;
 
-import eu.verdelhan.ta4j.Order.OrderType;
-
 import java.io.Serializable;
+import java.time.ZonedDateTime;
 import java.util.List;
+
+import eu.verdelhan.ta4j.Order.OrderType;
 
 /**
  * A history/record of a trading session.
@@ -49,7 +50,7 @@ public interface TradingRecord extends Serializable {
      * @param index the index to operate the order
      */
     default void operate(int index) {
-        operate(index, Decimal.NaN, Decimal.NaN);
+        operate(index, Decimal.NaN, Decimal.NaN, null);
     }
     
     /**
@@ -58,7 +59,7 @@ public interface TradingRecord extends Serializable {
      * @param price the price of the order
      * @param amount the amount to be ordered
      */
-    void operate(int index, Decimal price, Decimal amount);
+    void operate(int index, Decimal price, Decimal amount, ZonedDateTime date);
     
     /**
      * Operates an entry order in the trading record.
@@ -66,7 +67,7 @@ public interface TradingRecord extends Serializable {
      * @return true if the entry has been operated, false otherwise
      */
     default boolean enter(int index) {
-        return enter(index, Decimal.NaN, Decimal.NaN);
+        return enter(index, Decimal.NaN, Decimal.NaN, null);
     }
     
     /**
@@ -76,7 +77,7 @@ public interface TradingRecord extends Serializable {
      * @param amount the amount to be ordered
      * @return true if the entry has been operated, false otherwise
      */
-    boolean enter(int index, Decimal price, Decimal amount);
+    boolean enter(int index, Decimal price, Decimal amount, ZonedDateTime date);
     
     /**
      * Operates an exit order in the trading record.
@@ -84,7 +85,7 @@ public interface TradingRecord extends Serializable {
      * @return true if the exit has been operated, false otherwise
      */
     default boolean exit(int index) {
-        return exit(index, Decimal.NaN, Decimal.NaN);
+        return exit(index, Decimal.NaN, Decimal.NaN, null);
     }
     
     /**
@@ -94,7 +95,7 @@ public interface TradingRecord extends Serializable {
      * @param amount the amount to be ordered
      * @return true if the exit has been operated, false otherwise
      */
-    boolean exit(int index, Decimal price, Decimal amount);
+    boolean exit(int index, Decimal price, Decimal amount, ZonedDateTime date);
     
     /**
      * @return true if no trade is open, false otherwise

@@ -22,10 +22,11 @@
  */
 package eu.verdelhan.ta4j;
 
-import eu.verdelhan.ta4j.Order.OrderType;
-
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import eu.verdelhan.ta4j.Order.OrderType;
 
 /**
  * Base implementation of a {@link TradingRecord}.
@@ -94,7 +95,7 @@ public class BaseTradingRecord implements TradingRecord {
                 //    BUY, SELL
                 currentTrade = new Trade(o.getType());
             }
-            Order newOrder = currentTrade.operate(o.getIndex(), o.getPrice(), o.getAmount());
+            Order newOrder = currentTrade.operate(o.getIndex(), o.getPrice(), o.getAmount(), o.getDate());
             recordOrder(newOrder, newOrderWillBeAnEntry);
         }
     }
@@ -105,29 +106,29 @@ public class BaseTradingRecord implements TradingRecord {
     }
     
     @Override
-    public void operate(int index, Decimal price, Decimal amount) {
+    public void operate(int index, Decimal price, Decimal amount, ZonedDateTime date) {
         if (currentTrade.isClosed()) {
             // Current trade closed, should not occur
             throw new IllegalStateException("Current trade should not be closed");
         }
         boolean newOrderWillBeAnEntry = currentTrade.isNew();
-        Order newOrder = currentTrade.operate(index, price, amount);
+        Order newOrder = currentTrade.operate(index, price, amount, date);
         recordOrder(newOrder, newOrderWillBeAnEntry);
     }
     
     @Override
-    public boolean enter(int index, Decimal price, Decimal amount) {
+    public boolean enter(int index, Decimal price, Decimal amount, ZonedDateTime date) {
         if (currentTrade.isNew()) {
-            operate(index, price, amount);
+            operate(index, price, amount, date);
             return true;
         }
         return false;
     }
     
     @Override
-    public final boolean exit(int index, Decimal price, Decimal amount) {
+    public final boolean exit(int index, Decimal price, Decimal amount, ZonedDateTime date) {
         if (currentTrade.isOpened()) {
-            operate(index, price, amount);
+            operate(index, price, amount, date);
             return true;
         }
         return false;

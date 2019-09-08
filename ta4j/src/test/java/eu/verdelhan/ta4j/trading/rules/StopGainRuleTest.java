@@ -22,16 +22,16 @@
  */
 package eu.verdelhan.ta4j.trading.rules;
 
-import eu.verdelhan.ta4j.trading.rules.StopGainRule;
 import eu.verdelhan.ta4j.BaseTradingRecord;
 import eu.verdelhan.ta4j.Decimal;
 import eu.verdelhan.ta4j.TradingRecord;
 import eu.verdelhan.ta4j.indicators.helpers.ClosePriceIndicator;
 import eu.verdelhan.ta4j.mocks.MockTimeSeries;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class StopGainRuleTest {
 
@@ -58,7 +58,7 @@ public class StopGainRuleTest {
         assertFalse(rule.isSatisfied(1, tradingRecord));
         
         // Enter at 108
-        tradingRecord.enter(2, Decimal.valueOf("108"), tradedAmount);
+        tradingRecord.enter(2, Decimal.valueOf("108"), tradedAmount, null);
         assertFalse(rule.isSatisfied(2, tradingRecord));
         assertFalse(rule.isSatisfied(3, tradingRecord));
         assertTrue(rule.isSatisfied(4, tradingRecord));
@@ -66,7 +66,7 @@ public class StopGainRuleTest {
         tradingRecord.exit(5);
         
         // Enter at 118
-        tradingRecord.enter(5, Decimal.valueOf("118"), tradedAmount);
+        tradingRecord.enter(5, Decimal.valueOf("118"), tradedAmount, null);
         assertFalse(rule.isSatisfied(5, tradingRecord));
         assertTrue(rule.isSatisfied(6, tradingRecord));
         assertTrue(rule.isSatisfied(7, tradingRecord));

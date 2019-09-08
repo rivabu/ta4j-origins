@@ -23,6 +23,7 @@
 package eu.verdelhan.ta4j;
 
 import java.io.Serializable;
+import java.time.ZonedDateTime;
 import java.util.Objects;
 
 /**
@@ -79,7 +80,8 @@ public class Order implements Serializable {
     
     /** The amount to be (or that was) ordered */
     private Decimal amount = Decimal.ONE;
-    
+
+    private ZonedDateTime date;
     /**
      * Constructor.
      * @param index the index the order is executed
@@ -97,10 +99,11 @@ public class Order implements Serializable {
      * @param price the price for the order
      * @param amount the amount to be (or that was) ordered
      */
-    protected Order(int index, OrderType type, Decimal price, Decimal amount) {
+    protected Order(int index, OrderType type, Decimal price, Decimal amount, ZonedDateTime date) {
         this(index, type);
         this.price = price;
         this.amount = amount;
+        this.date = date;
     }
 
     /**
@@ -138,6 +141,9 @@ public class Order implements Serializable {
         return price;
     }
 
+    public ZonedDateTime getDate() {
+        return date;
+    }
     /**
      * @return the amount to be (or that was) ordered
      */
@@ -176,7 +182,7 @@ public class Order implements Serializable {
 
     @Override
     public String toString() {
-        return "Order{" + "type=" + type + ", index=" + index + ", price=" + price + ", amount=" + amount + '}';
+        return "Order{" + "type=" + type + ", index=" + index + ", price=" + price + ", amount=" + amount + ", date" + date +'}';
     }
     
     /**
@@ -193,8 +199,8 @@ public class Order implements Serializable {
      * @param amount the amount to be (or that was) bought
      * @return a BUY order
      */
-    public static Order buyAt(int index, Decimal price, Decimal amount) {
-        return new Order(index, OrderType.BUY, price, amount);
+    public static Order buyAt(int index, Decimal price, Decimal amount, ZonedDateTime date) {
+        return new Order(index, OrderType.BUY, price, amount, date);
     }
 
     /**
@@ -211,7 +217,7 @@ public class Order implements Serializable {
      * @param amount the amount to be (or that was) sold
      * @return a SELL order
      */
-    public static Order sellAt(int index, Decimal price, Decimal amount) {
-        return new Order(index, OrderType.SELL, price, amount);
+    public static Order sellAt(int index, Decimal price, Decimal amount, ZonedDateTime date) {
+        return new Order(index, OrderType.SELL, price, amount, date);
     }
 }

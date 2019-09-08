@@ -23,6 +23,7 @@
 package eu.verdelhan.ta4j;
 
 import java.io.Serializable;
+import java.time.ZonedDateTime;
 import java.util.Objects;
 
 import eu.verdelhan.ta4j.Order.OrderType;
@@ -114,7 +115,7 @@ public class Trade implements Serializable {
      * @return the order
      */
     public Order operate(int index) {
-        return operate(index, Decimal.NaN, Decimal.NaN);
+        return operate(index, Decimal.NaN, Decimal.NaN, null);
     }
 
     /**
@@ -124,16 +125,16 @@ public class Trade implements Serializable {
      * @param amount the amount
      * @return the order
      */
-    public Order operate(int index, Decimal price, Decimal amount) {
+    public Order operate(int index, Decimal price, Decimal amount, ZonedDateTime date) {
         Order order = null;
         if (isNew()) {
-            order = new Order(index, startingType, price, amount);
+            order = new Order(index, startingType, price, amount, date);
             entry = order;
         } else if (isOpened()) {
             if (index < entry.getIndex()) {
                 throw new IllegalStateException("The index i is less than the entryOrder index");
             }
-            order = new Order(index, startingType.complementType(), price, amount);
+            order = new Order(index, startingType.complementType(), price, amount, date);
             exit = order;
         }
         return order;

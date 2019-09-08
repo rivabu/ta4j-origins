@@ -22,6 +22,8 @@
  */
 package ta4jexamples.bots;
 
+import java.time.ZonedDateTime;
+
 import eu.verdelhan.ta4j.BaseStrategy;
 import eu.verdelhan.ta4j.BaseTick;
 import eu.verdelhan.ta4j.BaseTradingRecord;
@@ -31,11 +33,10 @@ import eu.verdelhan.ta4j.Strategy;
 import eu.verdelhan.ta4j.Tick;
 import eu.verdelhan.ta4j.TimeSeries;
 import eu.verdelhan.ta4j.TradingRecord;
-import eu.verdelhan.ta4j.indicators.helpers.ClosePriceIndicator;
 import eu.verdelhan.ta4j.indicators.SMAIndicator;
+import eu.verdelhan.ta4j.indicators.helpers.ClosePriceIndicator;
 import eu.verdelhan.ta4j.trading.rules.OverIndicatorRule;
 import eu.verdelhan.ta4j.trading.rules.UnderIndicatorRule;
-import java.time.ZonedDateTime;
 import ta4jexamples.loaders.CsvTradesLoader;
 
 /**
@@ -141,7 +142,7 @@ public class TradingBotOnMovingTimeSeries {
             if (strategy.shouldEnter(endIndex)) {
                 // Our strategy should enter
                 System.out.println("Strategy should ENTER on " + endIndex);
-                boolean entered = tradingRecord.enter(endIndex, newTick.getClosePrice(), Decimal.TEN);
+                boolean entered = tradingRecord.enter(endIndex, newTick.getClosePrice(), Decimal.TEN, newTick.getEndTime());
                 if (entered) {
                     Order entry = tradingRecord.getLastEntry();
                     System.out.println("Entered on " + entry.getIndex()
@@ -151,7 +152,7 @@ public class TradingBotOnMovingTimeSeries {
             } else if (strategy.shouldExit(endIndex)) {
                 // Our strategy should exit
                 System.out.println("Strategy should EXIT on " + endIndex);
-                boolean exited = tradingRecord.exit(endIndex, newTick.getClosePrice(), Decimal.TEN);
+                boolean exited = tradingRecord.exit(endIndex, newTick.getClosePrice(), Decimal.TEN, newTick.getEndTime());
                 if (exited) {
                     Order exit = tradingRecord.getLastExit();
                     System.out.println("Exited on " + exit.getIndex()

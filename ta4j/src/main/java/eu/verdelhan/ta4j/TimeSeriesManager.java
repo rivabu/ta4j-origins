@@ -23,7 +23,6 @@
 package eu.verdelhan.ta4j;
 
 import eu.verdelhan.ta4j.Order.OrderType;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -151,7 +150,7 @@ public class TimeSeriesManager {
         for (int i = runBeginIndex; i <= runEndIndex; i++) {
             // For each tick between both indexes...       
             if (strategy.shouldOperate(i, tradingRecord)) {
-                tradingRecord.operate(i, timeSeries.getTick(i).getClosePrice(), amount);
+                tradingRecord.operate(i, timeSeries.getTick(i).getClosePrice(), amount, timeSeries.getTick(i).getEndTime());
             }
         }
 
@@ -163,7 +162,7 @@ public class TimeSeriesManager {
                 // For each tick after the end index of this run...
                 // --> Trying to close the last trade
                 if (strategy.shouldOperate(i, tradingRecord)) {
-                    tradingRecord.operate(i, timeSeries.getTick(i).getClosePrice(), amount);
+                    tradingRecord.operate(i, timeSeries.getTick(i).getClosePrice(), amount, timeSeries.getTick(i).getEndTime());
                     break;
                 }
             }

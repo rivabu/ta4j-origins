@@ -22,11 +22,16 @@
  */
 package ta4jexamples.strategies;
 
+import java.util.List;
+
 import eu.verdelhan.ta4j.BaseStrategy;
+import eu.verdelhan.ta4j.Decimal;
 import eu.verdelhan.ta4j.Rule;
 import eu.verdelhan.ta4j.Strategy;
+import eu.verdelhan.ta4j.Tick;
 import eu.verdelhan.ta4j.TimeSeries;
 import eu.verdelhan.ta4j.TimeSeriesManager;
+import eu.verdelhan.ta4j.Trade;
 import eu.verdelhan.ta4j.TradingRecord;
 import eu.verdelhan.ta4j.analysis.criteria.TotalProfitCriterion;
 import eu.verdelhan.ta4j.indicators.StochasticOscillatorD2Indicator;
@@ -52,19 +57,25 @@ public class SOStrategy {
             throw new IllegalArgumentException("Series cannot be null");
         }
 
+        //handelen op close = 32,3,4
+        //handelen op open=28,3,2 (2.04,108)
         StochasticOscillatorKIndicator stochasticOscillatorKIndicator =
-                new StochasticOscillatorKIndicator(series, 28);
+                new StochasticOscillatorKIndicator(series, 31);
         StochasticOscillatorDIndicator stochasticOscillatorDIndicator_1 =
                 new StochasticOscillatorDIndicator(stochasticOscillatorKIndicator, 3);
         StochasticOscillatorD2Indicator stochasticOscillatorDIndicator_2 =
-                new StochasticOscillatorD2Indicator(stochasticOscillatorDIndicator_1, 2);
+                new StochasticOscillatorD2Indicator(stochasticOscillatorDIndicator_1, 3);
 
-        Rule entryRule = new OverIndicatorRule(stochasticOscillatorDIndicator_1, stochasticOscillatorDIndicator_2);
+        Rule entryRule =
+                new OverIndicatorRule(stochasticOscillatorDIndicator_1, Decimal.valueOf(58)).and(new OverIndicatorRule(stochasticOscillatorDIndicator_1,
+                stochasticOscillatorDIndicator_2));
 
-        Rule exitRule = new UnderIndicatorRule(stochasticOscillatorDIndicator_1, stochasticOscillatorDIndicator_2);
+        Rule exitRule =
+                new UnderIndicatorRule(stochasticOscillatorDIndicator_1, Decimal.valueOf(90)).and(new UnderIndicatorRule(stochasticOscillatorDIndicator_1,
+                stochasticOscillatorDIndicator_2));
 
         Strategy strategy = new BaseStrategy(entryRule, exitRule);
-        strategy.setUnstablePeriod(50);
+        strategy.setUnstablePeriod(20);
         return strategy;
     }
 
@@ -84,9 +95,49 @@ public class SOStrategy {
         // Analysis
         System.out.println("Total profit for the strategy: " + new TotalProfitCriterion().calculate(series, tradingRecord));
 
+        String status = "not in stock";
+        int amount = 0;
+        double value = 0;
+        int index = 0;
+        double cash = 100000;
+        double values[] = new double[series.getTickCount()];
+
+        for (Tick tick : series.getTickData()) {
+            if (status.equals("not in stock") && isBuySignal(index, tradingRecord.getTrades())) {
+                status = "bought";
+                amount = (int) Math.round(cash / tick.getClosePrice().toDouble());
+                cash = cash - (amount * tick.getClosePrice().toDouble());
+                values[index] = cash + (amount * tick.getClosePrice().toDouble());
+            } else if (status.equals("bought") && isSellSignal(index, tradingRecord.getTrades())) {
+                status = "not in stock";
+                cash = cash + (amount * tick.getClosePrice().toDouble());
+                amount = 0;
+                values[index] = cash;
+            } else if (status.equals("bought")) {
+                values[index] = cash + (amount * tick.getClosePrice().toDouble());
+            } else if (status.equals("not in stock")) {
+                values[index] = cash;
+            } else {
+                //error
+            }
+            index++;
+        }
+
+        for (double myvalue: values) {
+            System.out.println(myvalue);
+        }
 //        tradingRecord.getTrades().forEach(trade -> {
-//            System.out.println(((trade.getExit().getPrice().dividedBy(trade.getEntry().getPrice()).minus(Decimal.ONE))).multipliedBy(Decimal.HUNDRED));
+//            System.out.println(((trade.getExit().getPrice().dividedBy(trade.getEntry().getPrice()).minus(Decimal.ONE))).multipliedBy(Decimal.HUNDRED) + " " + trade);
 //        });
 
     }
+
+    private static boolean isBuySignal(int index, List<Trade> trades) {
+        return trades.stream().anyMatch(trade -> trade.getEntry().getIndex() == index);
+    }
+
+    private static boolean isSellSignal(int index, List<Trade> trades) {
+        return trades.stream().anyMatch(trade -> trade.getExit().getIndex() == index);
+    }
+
 }
