@@ -91,7 +91,7 @@ public class IndicatorsToChart {
         /*
           Getting time series
          */
-        TimeSeries series = CsvTicksLoaderASML.loadASMLIncSeries();
+        TimeSeries series = CsvTicksLoaderASML.loadASMLIncSeries(3);
 
         /**
          * Creating indicators

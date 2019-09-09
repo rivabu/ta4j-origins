@@ -83,7 +83,7 @@ public class RSI2Strategy {
     public static void main(String[] args) {
 
         // Getting the time series
-        TimeSeries series = CsvTicksLoaderASML.loadASMLIncSeries();
+        TimeSeries series = CsvTicksLoaderASML.loadASMLIncSeries(3);
 
         // Building the trading strategy
         Strategy strategy = buildStrategy(series);
