@@ -60,18 +60,18 @@ public class SOStrategy {
         //handelen op close = 32,3,4
         //handelen op open=28,3,2 (2.04,108)
         StochasticOscillatorKIndicator stochasticOscillatorKIndicator =
-                new StochasticOscillatorKIndicator(series, 31);
+                new StochasticOscillatorKIndicator(series, 34);
         StochasticOscillatorDIndicator stochasticOscillatorDIndicator_1 =
                 new StochasticOscillatorDIndicator(stochasticOscillatorKIndicator, 3);
         StochasticOscillatorD2Indicator stochasticOscillatorDIndicator_2 =
                 new StochasticOscillatorD2Indicator(stochasticOscillatorDIndicator_1, 3);
 
         Rule entryRule =
-                new OverIndicatorRule(stochasticOscillatorDIndicator_1, Decimal.valueOf(58)).and(new OverIndicatorRule(stochasticOscillatorDIndicator_1,
-                stochasticOscillatorDIndicator_2));
+                new OverIndicatorRule(stochasticOscillatorDIndicator_1,
+                stochasticOscillatorDIndicator_2);
 
         Rule exitRule =
-                new UnderIndicatorRule(stochasticOscillatorDIndicator_1, Decimal.valueOf(90)).and(new UnderIndicatorRule(stochasticOscillatorDIndicator_1,
+                new OverIndicatorRule(stochasticOscillatorKIndicator, Decimal.valueOf(67)).and(new UnderIndicatorRule(stochasticOscillatorDIndicator_1,
                 stochasticOscillatorDIndicator_2));
 
         Strategy strategy = new BaseStrategy(entryRule, exitRule);
@@ -89,46 +89,82 @@ public class SOStrategy {
 
         // Running the strategy
         TimeSeriesManager seriesManager = new TimeSeriesManager(series);
+        Tick lastTick = series.getLastTick();
         TradingRecord tradingRecord = seriesManager.run(strategy);
         System.out.println("Number of trades for the strategy: " + tradingRecord.getTradeCount());
+        //int index, Decimal price, Decimal amount, ZonedDateTime date
+        tradingRecord.getCurrentTrade().operate(series.getTickCount()- 1, lastTick.getClosePrice(), Decimal.NaN,
+                lastTick.getEndTime());
+        tradingRecord.getTrades().add(tradingRecord.getCurrentTrade());
 
         // Analysis
         System.out.println("Total profit for the strategy: " + new TotalProfitCriterion().calculate(series, tradingRecord));
 
         String status = "not in stock";
         int amount = 0;
+        int amountShortSell = 0;
+        double cashReceivedByShortSell = 0;
         double value = 0;
         int index = 0;
         double cash = 100000;
+        int aantalDagenNietGekocht = 0;
         double values[] = new double[series.getTickCount()];
 
         for (Tick tick : series.getTickData()) {
             if (status.equals("not in stock") && isBuySignal(index, tradingRecord.getTrades())) {
                 status = "bought";
                 amount = (int) Math.round(cash / tick.getClosePrice().toDouble());
+                cash = cash + cashReceivedByShortSell - (amountShortSell * tick.getClosePrice().toDouble());;
+                amountShortSell = 0;
+                cashReceivedByShortSell = 0;
                 cash = cash - (amount * tick.getClosePrice().toDouble());
-                values[index] = cash + (amount * tick.getClosePrice().toDouble());
+                values[index] =
+                        cash + (amount * tick.getClosePrice().toDouble());
+                aantalDagenNietGekocht++; // close koers  = koop
             } else if (status.equals("bought") && isSellSignal(index, tradingRecord.getTrades())) {
                 status = "not in stock";
                 cash = cash + (amount * tick.getClosePrice().toDouble());
                 amount = 0;
+                amountShortSell = (int) Math.round(cash / tick.getClosePrice().toDouble());
+                cashReceivedByShortSell = amountShortSell * tick.getClosePrice().toDouble();
                 values[index] = cash;
             } else if (status.equals("bought")) {
                 values[index] = cash + (amount * tick.getClosePrice().toDouble());
             } else if (status.equals("not in stock")) {
-                values[index] = cash;
+                aantalDagenNietGekocht++;
+                values[index] = cash + cashReceivedByShortSell - (amountShortSell * tick.getClosePrice().toDouble());
             } else {
                 //error
             }
             index++;
         }
-
+        System.out.println("aantalDagenNietGekocht: " + aantalDagenNietGekocht);
+        int i = 1;
+        int aantalStijgers = 0;
+        int aantalDalers = 0;
+        double sumStijging = 0;
+        double sumDaling = 0;
+        double vorigeValue = -1;
         for (double myvalue: values) {
-            System.out.println(myvalue);
+            System.out.println(i + " " + myvalue);
+            if ((vorigeValue > 0) && myvalue >= vorigeValue) {
+                aantalStijgers ++;
+                sumStijging = sumStijging + ((myvalue - vorigeValue) / vorigeValue);
+            }
+            if ((vorigeValue > 0) && myvalue < vorigeValue) {
+                aantalDalers ++;
+                sumDaling = sumDaling + ((vorigeValue - myvalue) / myvalue);
+            }
+            vorigeValue = myvalue;
+            i++;
         }
-//        tradingRecord.getTrades().forEach(trade -> {
-//            System.out.println(((trade.getExit().getPrice().dividedBy(trade.getEntry().getPrice()).minus(Decimal.ONE))).multipliedBy(Decimal.HUNDRED) + " " + trade);
-//        });
+        System.out.println("aantalStijgers: " + aantalStijgers + " aantalDalers: " + aantalDalers);
+        System.out.println("gemiddelde stijging: " + (sumStijging / aantalStijgers) * 100 + " gemiddelde daling: " + (sumDaling / aantalDalers) * 100);
+
+        tradingRecord.getTrades().forEach(trade -> {
+            System.out.println(((trade.getExit().getPrice().dividedBy(trade.getEntry().getPrice()).minus(Decimal.ONE)))
+             .multipliedBy(Decimal.HUNDRED) + " " + trade);
+        });
 
     }
 
@@ -137,7 +173,7 @@ public class SOStrategy {
     }
 
     private static boolean isSellSignal(int index, List<Trade> trades) {
-        return trades.stream().anyMatch(trade -> trade.getExit().getIndex() == index);
+        return trades.stream().anyMatch(trade -> trade.getExit() != null && trade.getExit().getIndex() == index);
     }
 
 }
