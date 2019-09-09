@@ -58,7 +58,7 @@ public class CsvTicksLoaderASML {
      */
     public static TimeSeries loadASMLIncSeries(int years) {
 
-        InputStream stream = CsvTicksLoaderASML.class.getClassLoader().getResourceAsStream("ASML-" + years + " -years.csv");
+        InputStream stream = CsvTicksLoaderASML.class.getClassLoader().getResourceAsStream("ASML-" + years + "-years.csv");
 
         List<Tick> ticks = new ArrayList<>();
 
