@@ -82,7 +82,7 @@ public class SOStrategy {
     public static void main(String[] args) {
 
         // Getting the time series
-        TimeSeries series = CsvTicksLoaderASML.loadASMLIncSeries(3);
+        TimeSeries series = CsvTicksLoaderASML.loadASMLIncSeries(4);
 
         // Building the trading strategy
         Strategy strategy = buildStrategy(series);
