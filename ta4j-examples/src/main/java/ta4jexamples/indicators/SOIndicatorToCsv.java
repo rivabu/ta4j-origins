@@ -45,7 +45,7 @@ public class SOIndicatorToCsv {
         /**
          * Getting time series
          */
-        TimeSeries series = CsvTicksLoaderASML.loadASMLIncSeries(3);
+        TimeSeries series = CsvTicksLoaderASML.loadASMLIncSeries("ASML", 3);
 
         /**
          * Creating indicators

@@ -56,9 +56,9 @@ public class CsvTicksLoaderASML {
     /**
      * @return a time series from ASML Inc. ticks.
      */
-    public static TimeSeries loadASMLIncSeries(int years) {
+    public static TimeSeries loadASMLIncSeries(String fundName, int years) {
 
-        InputStream stream = CsvTicksLoaderASML.class.getClassLoader().getResourceAsStream("ASML-" + years + "-years.csv");
+        InputStream stream = CsvTicksLoaderASML.class.getClassLoader().getResourceAsStream(fundName + "-" + years + "-years.csv");
 
         List<Tick> ticks = new ArrayList<>();
 
@@ -102,7 +102,7 @@ public class CsvTicksLoaderASML {
         return returnValue;
     }
     public static void main(String[] args) {
-        TimeSeries series = CsvTicksLoaderASML.loadASMLIncSeries(3);
+        TimeSeries series = CsvTicksLoaderASML.loadASMLIncSeries("ASML", 3);
 
         System.out.println("Series: " + series.getName() + " (" + series.getSeriesPeriodDescription() + ")");
         System.out.println("Number of ticks: " + series.getTickCount());
