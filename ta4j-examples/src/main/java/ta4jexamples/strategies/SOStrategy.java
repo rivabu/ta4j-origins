@@ -39,7 +39,7 @@ import eu.verdelhan.ta4j.indicators.StochasticOscillatorDIndicator;
 import eu.verdelhan.ta4j.indicators.StochasticOscillatorKIndicator;
 import eu.verdelhan.ta4j.trading.rules.OverIndicatorRule;
 import eu.verdelhan.ta4j.trading.rules.UnderIndicatorRule;
-import ta4jexamples.loaders.CsvTicksLoaderASML;
+import ta4jexamples.loaders.CsvTicksLoaderDownloaded;
 
 /**
  * CCI Correction Strategy
@@ -82,7 +82,7 @@ public class SOStrategy {
     public static void main(String[] args) {
 
         // Getting the time series
-        TimeSeries series = CsvTicksLoaderASML.loadASMLIncSeries("ASML", 4);
+        TimeSeries series = CsvTicksLoaderDownloaded.loadASMLIncSeries("ASML", 4);
 
         // Building the trading strategy
         Strategy strategy = buildStrategy(series);

@@ -44,7 +44,7 @@ import org.jfree.data.time.Day;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.ui.ApplicationFrame;
 import org.jfree.ui.RefineryUtilities;
-import ta4jexamples.loaders.CsvTicksLoaderASML;
+import ta4jexamples.loaders.CsvTicksLoaderDownloaded;
 
 /**
  * This class builds a graphical chart showing values from indicators.
@@ -91,7 +91,7 @@ public class IndicatorsToChart {
         /*
           Getting time series
          */
-        TimeSeries series = CsvTicksLoaderASML.loadASMLIncSeries("ASML", 3);
+        TimeSeries series = CsvTicksLoaderDownloaded.loadASMLIncSeries("ASML", 3);
 
         /**
          * Creating indicators

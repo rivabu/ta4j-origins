@@ -33,7 +33,7 @@ import eu.verdelhan.ta4j.indicators.StochasticOscillatorD2Indicator;
 import eu.verdelhan.ta4j.indicators.StochasticOscillatorDIndicator;
 import eu.verdelhan.ta4j.indicators.StochasticOscillatorKIndicator;
 import eu.verdelhan.ta4j.indicators.helpers.ClosePriceIndicator;
-import ta4jexamples.loaders.CsvTicksLoaderASML;
+import ta4jexamples.loaders.CsvTicksLoaderDownloaded;
 
 /**
  * This class builds a CSV file containing values from indicators.
@@ -45,7 +45,7 @@ public class SOIndicatorToCsv {
         /**
          * Getting time series
          */
-        TimeSeries series = CsvTicksLoaderASML.loadASMLIncSeries("ASML", 3);
+        TimeSeries series = CsvTicksLoaderDownloaded.loadASMLIncSeries("ASML", 3);
 
         /**
          * Creating indicators

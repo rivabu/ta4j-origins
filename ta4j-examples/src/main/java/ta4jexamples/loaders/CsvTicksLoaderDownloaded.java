@@ -47,7 +47,7 @@ import eu.verdelhan.ta4j.TimeSeries;
 /**
  * This class build a Ta4j time series from a CSV file containing ticks.
  */
-public class CsvTicksLoaderASML {
+public class CsvTicksLoaderDownloaded {
 
     
     //Sep 06, 2019
@@ -58,7 +58,7 @@ public class CsvTicksLoaderASML {
      */
     public static TimeSeries loadASMLIncSeries(String fundName, int years) {
 
-        InputStream stream = CsvTicksLoaderASML.class.getClassLoader().getResourceAsStream(fundName + "-" + years + "-years.csv");
+        InputStream stream = CsvTicksLoaderDownloaded.class.getClassLoader().getResourceAsStream(fundName + "-" + years + "-years.csv");
 
         List<Tick> ticks = new ArrayList<>();
 
@@ -76,9 +76,9 @@ public class CsvTicksLoaderASML {
                 ticks.add(new BaseTick(date, open, high, low, close, volume));
             }
         } catch (IOException ioe) {
-            Logger.getLogger(CsvTicksLoaderASML.class.getName()).log(Level.SEVERE, "Unable to load ticks from CSV", ioe);
+            Logger.getLogger(CsvTicksLoaderDownloaded.class.getName()).log(Level.SEVERE, "Unable to load ticks from CSV", ioe);
         } catch (NumberFormatException nfe) {
-            Logger.getLogger(CsvTicksLoaderASML.class.getName()).log(Level.SEVERE, "Error while parsing value", nfe);
+            Logger.getLogger(CsvTicksLoaderDownloaded.class.getName()).log(Level.SEVERE, "Error while parsing value", nfe);
         }
 
         return new BaseTimeSeries("ASML_ticks", reverse(ticks.stream()).collect(Collectors.toList()));
@@ -102,7 +102,7 @@ public class CsvTicksLoaderASML {
         return returnValue;
     }
     public static void main(String[] args) {
-        TimeSeries series = CsvTicksLoaderASML.loadASMLIncSeries("ASML", 3);
+        TimeSeries series = CsvTicksLoaderDownloaded.loadASMLIncSeries("ASML", 3);
 
         System.out.println("Series: " + series.getName() + " (" + series.getSeriesPeriodDescription() + ")");
         System.out.println("Number of ticks: " + series.getTickCount());

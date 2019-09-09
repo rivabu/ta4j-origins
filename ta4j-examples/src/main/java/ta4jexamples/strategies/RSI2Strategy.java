@@ -37,7 +37,7 @@ import eu.verdelhan.ta4j.trading.rules.CrossedDownIndicatorRule;
 import eu.verdelhan.ta4j.trading.rules.CrossedUpIndicatorRule;
 import eu.verdelhan.ta4j.trading.rules.OverIndicatorRule;
 import eu.verdelhan.ta4j.trading.rules.UnderIndicatorRule;
-import ta4jexamples.loaders.CsvTicksLoaderASML;
+import ta4jexamples.loaders.CsvTicksLoaderDownloaded;
 
 /**
  * 2-Period RSI Strategy
@@ -83,7 +83,7 @@ public class RSI2Strategy {
     public static void main(String[] args) {
 
         // Getting the time series
-        TimeSeries series = CsvTicksLoaderASML.loadASMLIncSeries("ASML", 3);
+        TimeSeries series = CsvTicksLoaderDownloaded.loadASMLIncSeries("ASML", 3);
 
         // Building the trading strategy
         Strategy strategy = buildStrategy(series);
