@@ -52,7 +52,7 @@ public class SOStrategy {
      * @param series a time series
      * @return a CCI correction strategy
      */
-    public static Strategy buildStrategy(TimeSeries series) {
+    public static Strategy buildStrategy(TimeSeries series, int k_timeframe, int d_timeframe, int d2_timeframe, int exitTrashhold) {
         if (series == null) {
             throw new IllegalArgumentException("Series cannot be null");
         }
@@ -60,18 +60,18 @@ public class SOStrategy {
         //handelen op close = 32,3,4
         //handelen op open=28,3,2 (2.04,108)
         StochasticOscillatorKIndicator stochasticOscillatorKIndicator =
-                new StochasticOscillatorKIndicator(series, 34);
+                new StochasticOscillatorKIndicator(series, k_timeframe);
         StochasticOscillatorDIndicator stochasticOscillatorDIndicator_1 =
-                new StochasticOscillatorDIndicator(stochasticOscillatorKIndicator, 3);
+                new StochasticOscillatorDIndicator(stochasticOscillatorKIndicator, d_timeframe);
         StochasticOscillatorD2Indicator stochasticOscillatorDIndicator_2 =
-                new StochasticOscillatorD2Indicator(stochasticOscillatorDIndicator_1, 3);
+                new StochasticOscillatorD2Indicator(stochasticOscillatorDIndicator_1, d2_timeframe);
 
         Rule entryRule =
                 new OverIndicatorRule(stochasticOscillatorDIndicator_1,
                 stochasticOscillatorDIndicator_2);
 
         Rule exitRule =
-                new OverIndicatorRule(stochasticOscillatorKIndicator, Decimal.valueOf(67)).and(new UnderIndicatorRule(stochasticOscillatorDIndicator_1,
+                new OverIndicatorRule(stochasticOscillatorKIndicator, Decimal.valueOf(exitTrashhold)).and(new UnderIndicatorRule(stochasticOscillatorDIndicator_1,
                 stochasticOscillatorDIndicator_2));
 
         Strategy strategy = new BaseStrategy(entryRule, exitRule);
@@ -85,7 +85,7 @@ public class SOStrategy {
         TimeSeries series = CsvTicksLoaderDownloaded.loadASMLIncSeries("ASML", 4);
 
         // Building the trading strategy
-        Strategy strategy = buildStrategy(series);
+        Strategy strategy = buildStrategy(series, 34, 3, 3, 67);
 
         // Running the strategy
         TimeSeriesManager seriesManager = new TimeSeriesManager(series);
@@ -146,7 +146,7 @@ public class SOStrategy {
         double sumDaling = 0;
         double vorigeValue = -1;
         for (double myvalue: values) {
-            System.out.println(i + " " + myvalue);
+//            System.out.println(i + " " + myvalue);
             if ((vorigeValue > 0) && myvalue >= vorigeValue) {
                 aantalStijgers ++;
                 sumStijging = sumStijging + ((myvalue - vorigeValue) / vorigeValue);
@@ -162,8 +162,8 @@ public class SOStrategy {
         System.out.println("gemiddelde stijging: " + (sumStijging / aantalStijgers) * 100 + " gemiddelde daling: " + (sumDaling / aantalDalers) * 100);
 
         tradingRecord.getTrades().forEach(trade -> {
-            System.out.println(((trade.getExit().getPrice().dividedBy(trade.getEntry().getPrice()).minus(Decimal.ONE)))
-             .multipliedBy(Decimal.HUNDRED) + " " + trade);
+//            System.out.println(((trade.getExit().getPrice().dividedBy(trade.getEntry().getPrice()).minus(Decimal.ONE)))
+//             .multipliedBy(Decimal.HUNDRED) + " " + trade);
         });
 
     }
